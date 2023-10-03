@@ -1,0 +1,96 @@
+---
+title: "Visualization 2"
+output: html_document
+---
+
+# Setup
+
+```{r setup}
+library(tidyverse)
+library(ggridges)
+```
+
+We’ll be working with NOAA weather data, which is downloaded using `rnoaa::meteo_pull_monitors` function in the code chunk below; similar code underlies the weather dataset used elsewhere in the course. Because this process can take some time, I’ll cache the code chunk.
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+
+# can use weather_df |> view() in the command line to see the full dataset
+```
+
+# Same Plot From Last Time
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Min daily temp (Degrees Celsius)",
+    y = "Max daily temp (Degrees Celsius)",
+    color = "Location",
+    caption = "Max vs. min daily temp in 3 locations; data from RNOAA"
+  )
+```
+
+# Adding Scales
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Min daily temp",
+    y = "Max daily temp",
+    color = "Location",
+    caption = "Max vs. min daily temp in 3 locations; data from RNOAA"
+  ) +
+  scale_x_continuous(
+    breaks = c(-15, 0, 15),
+    labels = c("-15 C", "0", "15 C")
+    ) +
+  scale_y_continuous(
+    position = "right",
+    trans = "sqrt",
+    limits = c(0, 30)
+  )
+```
+
+Note that `limits` doesn't automatically update the scale/labeling on the corresponding axis, so might need to separately make adjustments to those after limiting.
+
+# Colors
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .5) +
+  labs(
+    title = "Temperature Plot",
+    x = "Min daily temp",
+    y = "Max daily temp",
+    color = "Location",
+    caption = "Max vs. min daily temp in 3 locations; data from RNOAA"
+  ) +
+  scale_color_hue(h = c(150, 300))
+```
+
+Other option: viridis::scale_color_viridis(discrete = TRUE). The color schemes from the viridis package are better for color-blindness accessibility and clearer when printing in gray-scale. But, do need to specify discrete vs. continuous with functions from this package.
+
+# Themes
+```{r}
+
+```
+
+

@@ -1,5 +1,5 @@
 ---
-title: "Visualization with ggplot2"
+title: "Visualization 1"
 output: html_document
 ---
 
@@ -222,4 +222,6 @@ What makes embedding figures difficult at first is that things like the font and
 ggplot(weather_df, aes(x = tmin, y = tmax)) + 
   geom_point(aes(color = name))
 ```
+
+
 
